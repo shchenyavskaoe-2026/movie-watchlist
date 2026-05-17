@@ -1,0 +1,15 @@
+  <div class="movie-list">
+    <h2>Movies</h2>
+    <ul>
+      @for (movie of movies(); track movie.id) {
+        <li>
+          <strong>{{ movie.title }}</strong> ({{ movie.year }})
+          @if (movie.isWatched) {
+            <span> ✓ Watched</span>
+          }
+        </li>
+      } @empty {
+        <li>No movies found</li>
+      }
+    </ul>
+  </div>

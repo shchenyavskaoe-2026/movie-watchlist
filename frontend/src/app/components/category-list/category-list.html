@@ -1,0 +1,10 @@
+  <div class="category-list">
+    <h2>Categories</h2>
+    <ul>
+      @for (category of categories(); track $index) {
+        <li>{{ category.name }}</li>
+      } @empty {
+        <li>No categories found</li>
+      }
+    </ul>
+  </div>

@@ -1,0 +1,27 @@
+# Backend - .NET
+backend/bin/
+backend/obj/
+backend/*.user
+backend/*.suo
+backend/.vs/
+
+# Frontend - Angular/Node
+frontend/node_modules/
+frontend/.angular/
+frontend/dist/
+
+# Environment files with secrets
+backend/appsettings.Development.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
