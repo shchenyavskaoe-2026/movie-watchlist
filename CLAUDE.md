@@ -10,6 +10,58 @@ Full-stack Movie Watchlist application for tracking movies you want to watch or 
 - **Backend:** .NET 10 / ASP.NET Core + Entity Framework Core + PostgreSQL
 - **Frontend:** Angular 21 (Standalone Components, Signals, Zoneless)
 
+## Development Rules
+
+### Full-Stack Thinking
+When implementing any feature, ALWAYS consider the complete flow:
+1. **Frontend** - UI components, forms, user interaction
+2. **Service** - API calls, data transformation
+3. **Backend Controller** - Request handling, validation
+4. **Repository** - Database operations, relationships
+5. **Database** - Schema changes, migrations needed?
+
+Never implement frontend without checking if backend supports it.
+Never add API calls without verifying the endpoint exists and handles the data correctly.
+
+### Feature Requirements Process
+Before implementing any new feature, create a requirements document in the `requirements/` folder.
+
+When gathering requirements, ask questions ONE BY ONE. For each question:
+1. **Research first** - Check existing code, patterns, and constraints before asking
+2. **Explain why** - Briefly state why this question matters
+3. **Suggest options** - Provide multiple solutions/variations with reasoning for each
+4. **Recommend one** - Indicate which option you would select and why
+5. **Describe value** - Explain how your selection improves the app, UI, or UX
+
+Example requirement file: `requirements/feature-movie-search.md`
+
+### Before Adding a Feature, Ask:
+- Does the backend endpoint exist?
+- Does it accept the data format we're sending?
+- Are there database relationships that need special handling (e.g., many-to-many)?
+- Do we need a migration?
+- Does the Repository method handle linking existing entities vs creating new ones?
+
+### EF Core Many-to-Many Relationships
+When sending related entities (like categories for a movie), the backend must:
+1. Extract IDs from the sent objects
+2. Load existing entities from database
+3. Assign loaded entities to the relationship
+4. Then save
+
+Example:
+```csharp
+// DON'T: Use sent objects directly (tries to INSERT new records)
+_context.Movies.Add(movie);
+
+// DO: Load existing related entities first
+var categoryIds = movie.Categories.Select(c => c.Id).ToList();
+movie.Categories = await _context.Categories
+    .Where(c => categoryIds.Contains(c.Id))
+    .ToListAsync();
+_context.Movies.Add(movie);
+```
+
 ## Commands
 
 ### Backend (from `backend/` directory)

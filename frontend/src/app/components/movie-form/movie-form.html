@@ -1,0 +1,61 @@
+  <form [formGroup]="movieForm" (ngSubmit)="onSubmit()">
+
+    <div class="form-group">
+      <label>Title *</label>
+      <input formControlName="title" placeholder="Movie title">
+      @if (movieForm.get('title')?.invalid && movieForm.get('title')?.touched) {
+        <span class="error">Title is required (max 200 chars)</span>
+      }
+    </div>
+
+
+  
+     <div class="form-group">
+      <label>Year</label>
+      <input formControlName="year" type="number" placeholder="2026">
+    </div>
+    <div class="form-group">
+      <label>Director</label>
+      <input formControlName="director" placeholder="Director name">
+    </div>
+   <div class="form-group">
+      <label>Plot</label>
+      <textarea formControlName="plot" placeholder="Movie description"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Rating (1-10)</label>
+      <input formControlName="rating" type="number" min="1" max="10">
+      @if (movieForm.get('rating')?.invalid && movieForm.get('rating')?.touched) {
+        <span class="error">Rating must be 1-10</span>
+      }
+    </div>
+
+        <div class="form-group">
+      <label>Categories</label>
+      <div class="checkbox-group">
+        @for (category of categories(); track category.id) {
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              [checked]="selectedCategoryIds().includes(category.id)"
+              (change)="toggleCategory(category.id)">
+            {{ category.name }}
+          </label>
+        } @empty {
+          <span>No categories available</span>
+        }
+      </div>
+    </div>
+
+
+    <div class="form-group">
+      <label>
+        <input formControlName="isWatched" type="checkbox">
+        Already watched
+      </label>
+    </div>
+
+
+    <button type="submit" [disabled]="movieForm.invalid">Save</button>
+  </form>

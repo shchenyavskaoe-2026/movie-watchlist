@@ -1,16 +1,16 @@
 import { Category } from "./category.model";
 
 
-export interface Movie {
-        id: number;
+  export interface Movie {
+    id: number;
     title: string;
-    year: number;
-    director: string;
-    plot: string;
-    poster: string;
-    imdbId: string;
-    rating: number;
+    year: number | null;
+    director: string | null;
+    plot: string | null;
+    poster: string | null;
+    imdbId: string | null;
+    rating: number | null;
     isWatched: boolean;
     createdAt: Date;
     categories: Category[];
-}
+  }

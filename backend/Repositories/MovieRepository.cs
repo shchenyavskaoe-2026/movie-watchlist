@@ -29,12 +29,21 @@
           }
 
           public async Task<Movie> CreateAsync(Movie movie)
-          {
-              movie.CreatedAt = DateTime.UtcNow;  // Set creation time
-              _context.Movies.Add(movie);
-              await _context.SaveChangesAsync();
-              return movie;
-          }
+     {
+      // If categories were sent, link to EXISTING categories
+      if (movie.Categories != null && movie.Categories.Any())
+      {
+          var categoryIds = movie.Categories.Select(c => c.Id).ToList();
+          movie.Categories = await _context.Categories
+              .Where(c => categoryIds.Contains(c.Id))
+              .ToListAsync();
+      }
+
+      movie.CreatedAt = DateTime.UtcNow;
+      _context.Movies.Add(movie);
+      await _context.SaveChangesAsync();
+      return movie;
+  }
 
           public async Task<Movie?> UpdateAsync(int id, Movie movie)
           {
