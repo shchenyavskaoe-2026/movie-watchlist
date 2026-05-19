@@ -28,7 +28,7 @@ create(newMovie: Partial<Movie>): Observable<Movie> {
 return this.http.post<Movie>(this.apiUrl, newMovie)
 }
 
-update(id: number, movie: Movie): Observable<Movie> {
+update(id: number, movie: Partial<Movie>): Observable<Movie> {
 return this.http.put<Movie>(`${this.apiUrl}/${id}`, movie)
 }
 

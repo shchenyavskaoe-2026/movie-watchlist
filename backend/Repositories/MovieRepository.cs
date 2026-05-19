@@ -14,55 +14,94 @@
               _context = context;
           }
 
-          public async Task<List<Movie>> GetAllAsync()
-          {
-              return await _context.Movies
-                  .Include(m => m.Categories)  // Also load related categories
-                  .ToListAsync();
-          }
+       public async Task<List<Movie>> GetAllAsync()
+  {
+      var movies = await _context.Movies
+          .Include(m => m.Categories)
+          .ToListAsync();
 
-          public async Task<Movie?> GetByIdAsync(int id)
-          {
-              return await _context.Movies
-                  .Include(m => m.Categories)
-                  .FirstOrDefaultAsync(m => m.Id == id);
-          }
-
-          public async Task<Movie> CreateAsync(Movie movie)
-     {
-      // If categories were sent, link to EXISTING categories
-      if (movie.Categories != null && movie.Categories.Any())
+      // Populate CategoryIds from Categories
+      foreach (var movie in movies)
       {
-          var categoryIds = movie.Categories.Select(c => c.Id).ToList();
+          movie.CategoryIds = movie.Categories.Select(c => c.Id).ToList();
+      }
+
+      return movies;
+  }
+
+  public async Task<Movie?> GetByIdAsync(int id)
+  {
+      var movie = await _context.Movies
+          .Include(m => m.Categories)
+          .FirstOrDefaultAsync(m => m.Id == id);
+
+      if (movie != null)
+      {
+          movie.CategoryIds = movie.Categories.Select(c => c.Id).ToList();
+      }
+
+      return movie;
+  }
+
+       
+    public async Task<Movie> CreateAsync(Movie movie)
+  {
+      // Use CategoryIds instead of Categories
+      if (movie.CategoryIds?.Any() == true)
+      {
           movie.Categories = await _context.Categories
-              .Where(c => categoryIds.Contains(c.Id))
+              .Where(c => movie.CategoryIds.Contains(c.Id))
               .ToListAsync();
       }
 
       movie.CreatedAt = DateTime.UtcNow;
       _context.Movies.Add(movie);
       await _context.SaveChangesAsync();
+
+      // Populate CategoryIds for response
+      movie.CategoryIds = movie.Categories.Select(c => c.Id).ToList();
+
       return movie;
   }
 
-          public async Task<Movie?> UpdateAsync(int id, Movie movie)
-          {
-              var existingMovie = await _context.Movies.FindAsync(id);
-              if (existingMovie == null) return null;
 
-              // Update properties
-              existingMovie.Title = movie.Title;
-              existingMovie.Year = movie.Year;
-              existingMovie.Director = movie.Director;
-              existingMovie.Plot = movie.Plot;
-              existingMovie.Poster = movie.Poster;
-              existingMovie.ImdbId = movie.ImdbId;
-              existingMovie.Rating = movie.Rating;
-              existingMovie.IsWatched = movie.IsWatched;
 
-              await _context.SaveChangesAsync();
-              return existingMovie;
-          }
+  public async Task<Movie?> UpdateAsync(int id, Movie movie)
+  {
+      // Load existing movie WITH categories
+      var existingMovie = await _context.Movies
+          .Include(m => m.Categories)  // Important!
+          .FirstOrDefaultAsync(m => m.Id == id);
+
+      if (existingMovie == null) return null;
+
+      // Update properties
+      existingMovie.Title = movie.Title;
+      existingMovie.Year = movie.Year;
+      existingMovie.Director = movie.Director;
+      existingMovie.Plot = movie.Plot;
+      existingMovie.Poster = movie.Poster;
+      existingMovie.ImdbId = movie.ImdbId;
+      existingMovie.Rating = movie.Rating;
+      existingMovie.IsWatched = movie.IsWatched;
+
+      // Update categories
+      if (movie.CategoryIds != null)
+      {
+          existingMovie.Categories = await _context.Categories
+              .Where(c => movie.CategoryIds.Contains(c.Id))
+              .ToListAsync();
+      }
+
+      await _context.SaveChangesAsync();
+
+      // Populate CategoryIds for response
+      existingMovie.CategoryIds = existingMovie.Categories.Select(c => c.Id).ToList();
+
+      return existingMovie;
+  }
+
+
 
           public async Task<bool> DeleteAsync(int id)
           {

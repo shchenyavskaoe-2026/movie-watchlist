@@ -1,7 +1,7 @@
 # Movie Form Component
 
 ## Overview
-Form for creating new movies with category selection.
+Reusable form for creating and editing movies with category selection.
 
 ## Location
 `frontend/src/app/components/movie-form/`
@@ -13,6 +13,12 @@ Form for creating new movies with category selection.
 - `movie-form.spec.ts` - Tests
 
 ## Component Structure
+
+### Inputs/Outputs
+```typescript
+@Input() movie: Movie | null = null;  // Pass movie for edit mode
+@Output() saved = new EventEmitter<void>();  // Emits when saved
+```
 
 ### Properties
 ```typescript
@@ -33,11 +39,17 @@ movieForm = this.fb.nonNullable.group({...});
 | year | number | - |
 | director | text | - |
 | plot | textarea | - |
+| poster | text | maxLength(500), URL pattern |
 | rating | number | min(1), max(10) |
 | isWatched | checkbox | - |
 | categories | checkboxes | (separate signal) |
 
 ## Methods
+
+### ngOnChanges()
+Detects when `movie` input changes:
+- If movie exists: populate form for edit mode
+- If movie is null: reset form for add mode
 
 ### loadCategories()
 Fetches all categories on component init for the checkbox list.
@@ -47,9 +59,10 @@ Adds/removes category ID from selectedCategoryIds signal.
 
 ### onSubmit()
 1. Validates form
-2. Combines form values with selected categories
-3. Calls MovieService.create()
-4. Resets form on success
+2. Combines form values with selected categoryIds
+3. Calls MovieService.create() or update() based on mode
+4. Emits `saved` event for parent to refresh
+5. Resets form on success (add mode only)
 
 ## Template Features
 - Reactive form binding with `[formGroup]` and `formControlName`
@@ -64,14 +77,17 @@ Adds/removes category ID from selectedCategoryIds signal.
   year: 2010,
   director: "Christopher Nolan",
   plot: "...",
+  poster: "https://example.com/poster.jpg",
   rating: 9,
   isWatched: true,
-  categories: [{ id: 1 }, { id: 3 }]
+  categoryIds: [1, 3]  // Just IDs, not full objects
 }
 ```
 
-## Current Limitations
-- No edit mode (create only)
-- Movie list doesn't auto-refresh after save
-- No loading indicator during save
-- No success/error messages
+## Edit Mode Flow
+1. Parent passes `movie` via @Input
+2. ngOnChanges detects change
+3. Form is populated with movie data
+4. Categories are pre-selected
+5. On submit, calls update() instead of create()
+6. Emits `saved` event

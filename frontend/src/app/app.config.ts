@@ -1,8 +1,16 @@
   import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
-  import { provideRouter } from '@angular/router';
+  import { provideRouter, Routes } from '@angular/router';
   import { provideHttpClient, withFetch } from '@angular/common/http';
 
-  import { routes } from './app.routes';
+  import { Home } from './pages/home/home';
+  import { Settings } from './pages/settings/settings';
+  
+
+  const routes: Routes = [
+    { path: '', component: Home },
+    { path: 'settings', component: Settings }
+  ];
+
 
   export const appConfig: ApplicationConfig = {
     providers: [

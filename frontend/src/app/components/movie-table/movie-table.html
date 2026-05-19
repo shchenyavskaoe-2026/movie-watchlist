@@ -1,0 +1,78 @@
+ <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Year</th>
+          <th>Director</th>
+          <th>Plot</th>
+          <th>Poster</th>
+      
+          <th>Rating</th>
+          <th>Watched</th>
+        
+      
+            <th>Categories</th>
+   
+          <th>Created At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (movie of movies(); track movie.id) {
+          <tr>
+            <td>{{ movie.id }}</td>
+            <td>{{ movie.title }}</td>
+            <td>{{ movie.year }}</td>
+            <td>{{ movie.director }}</td>
+            <td class="plot-cell">{{ movie.plot }}</td>
+        <td>
+    @if (movie.poster) {
+      <img [src]="movie.poster" alt="Poster" class="poster-thumb">
+    } @else {
+      -
+    }
+  </td>
+      
+            <td>{{ movie.rating }}</td>
+            <td>{{ movie.isWatched ? 'Yes' : 'No' }}</td>
+
+      <td>
+    @for (catId of movie.categoryIds; track catId) {
+      <span class="category-tag">{{ getCategoryName(catId) }}</span>
+    } @empty {
+      -
+    }
+  </td>
+
+            <td>{{ movie.createdAt | date:'short' }}</td>
+            <td class="actions">
+              <button class="edit-btn" (click)="openEditModal(movie)">Edit</button>
+              <button class="delete-btn" (click)="openDeleteModal(movie)">Delete</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="12" class="empty">No movies yet</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <button class="add-btn" (click)="openAddModal()">+ Add Movie</button>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <app-modal [title]="modalTitle()" [isOpen]="isModalOpen()" (close)="closeModal()">
+    <app-movie-form [movie]="selectedMovie()" (saved)="onMovieSaved()"></app-movie-form>
+  </app-modal>
+
+  <!-- Delete Confirmation Modal -->
+  <app-modal title="Confirm Delete" [isOpen]="isDeleteModalOpen()" (close)="closeDeleteModal()">
+    <p>Are you sure you want to delete "{{ selectedMovie()?.title }}"?</p>
+    <div class="delete-actions">
+      <button class="cancel-btn" (click)="closeDeleteModal()">Cancel</button>
+      <button class="delete-btn" (click)="confirmDelete()">Delete</button>
+    </div>
+  </app-modal>

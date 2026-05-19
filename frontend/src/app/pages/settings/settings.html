@@ -1,0 +1,26 @@
+<div class="settings-page">
+    <h1>Settings</h1>
+
+    <div class="tabs">
+      <button 
+        [class.active]="activeTab() === 'movies'" 
+        (click)="setTab('movies')">
+        Movies
+      </button>
+      <button 
+        [class.active]="activeTab() === 'categories'" 
+        (click)="setTab('categories')">
+        Categories
+      </button>
+    </div>
+
+    <div class="tab-content">
+      @if (activeTab() === 'movies') {
+        <app-movie-table></app-movie-table>
+      }
+
+      @if (activeTab() === 'categories') {
+       <app-category-table></app-category-table>
+      }
+    </div>
+  </div>

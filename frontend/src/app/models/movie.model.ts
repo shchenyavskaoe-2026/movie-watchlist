@@ -4,7 +4,7 @@ import { Category } from "./category.model";
   export interface Movie {
     id: number;
     title: string;
-    year: number | null;
+    year: number | null ;
     director: string | null;
     plot: string | null;
     poster: string | null;
@@ -12,5 +12,8 @@ import { Category } from "./category.model";
     rating: number | null;
     isWatched: boolean;
     createdAt: Date;
-    categories: Category[];
+   // categories: Category[];
+    categoryIds: number[];
   }
+
+  

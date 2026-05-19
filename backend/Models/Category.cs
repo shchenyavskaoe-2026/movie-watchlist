@@ -1,7 +1,8 @@
 
     using System.ComponentModel.DataAnnotations;
-  
-  namespace Backend.Models
+using System.Text.Json.Serialization;
+
+namespace Backend.Models
 {
     public class Category
     {
@@ -10,7 +11,7 @@
               public required string Name { get; set; }
 
 
-
+  [JsonIgnore]  // Add this - stops the circular loop
                public ICollection<Movie> Movies { get; set; } = new List<Movie>();
 
     }

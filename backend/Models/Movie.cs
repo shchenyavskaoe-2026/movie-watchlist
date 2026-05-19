@@ -1,6 +1,9 @@
 
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+  using System.ComponentModel.DataAnnotations.Schema;
+ using System.Text.Json.Serialization;  // Add this
+
   
   namespace Backend.Models 
   {
@@ -27,8 +30,11 @@ public class Movie // 'public' allows access from other parts of the app
 
 
 
+          [JsonIgnore]  // Don't send to frontend
+          public ICollection<Category> Categories { get; set; } = new List<Category>();
 
-        public ICollection<Category> Categories { get; set; } = new List<Category>();
+          [NotMapped]
+          public List<int>? CategoryIds { get; set; }
     }
 
   }

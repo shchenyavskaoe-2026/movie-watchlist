@@ -1,0 +1,59 @@
+ <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+        
+          <th>IMDB ID</th>
+    
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (category of categorys(); track category.id) {
+          <tr>
+            <td>{{ category.id }}</td>
+            <td>{{ category.name }}</td>
+         
+            
+          
+       
+          
+            <td>
+              @for (m of category.movie; track m.id) {
+                <span class="category-tag">{{ m.title }}</span>
+              } @empty {
+                -
+              }
+            </td>
+          
+            <td class="actions">
+              <button class="edit-btn" (click)="openEditModal(category)">Edit</button>
+              <button class="delete-btn" (click)="openDeleteModal(category)">Delete</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="12" class="empty">No category yet</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <button class="add-btn" (click)="openAddModal()">+ Add Category</button>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <app-modal [title]="modalTitle()" [isOpen]="isModalOpen()" (close)="closeModal()">
+    <app-category-form [category]="selectedCategory()" (saved)="onCategorySaved()"></app-category-form>
+  </app-modal>
+
+  <!-- Delete Confirmation Modal -->
+  <app-modal title="Confirm Delete" [isOpen]="isDeleteModalOpen()" (close)="closeDeleteModal()">
+    <p>Are you sure you want to delete category"{{ selectedCategory()?.name }}"?</p>
+    <div class="delete-actions">
+      <button class="cancel-btn" (click)="closeDeleteModal()">Cancel</button>
+      <button class="delete-btn" (click)="confirmDelete()">Delete</button>
+    </div>
+  </app-modal>
