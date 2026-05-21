@@ -8,10 +8,16 @@
 import { Category } from '../../models/category.model';
 import { CategoryService } from '../../services/category.service';
 import { StateService } from '../../services/state.service';
+  import { SearchBox } from '../search-box/search-box';
+
+
+
+
+
 
 @Component({
   selector: 'app-movie-table',
-  imports: [Modal, MovieForm, DatePipe],
+  imports: [Modal, MovieForm, DatePipe, SearchBox],
   templateUrl: './movie-table.html',
   styleUrl: './movie-table.scss',
 })

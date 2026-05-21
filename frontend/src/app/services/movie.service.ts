@@ -16,9 +16,15 @@ import { Movie } from "../models/movie.model";
 
     constructor(private http: HttpClient) {}
 
-    getAll(): Observable<Movie[]> {
-        return this.http.get<Movie[]>(this.apiUrl);
-    }
+
+
+      getAll(search?: string): Observable<Movie[]> {
+    const url = search ? `${this.apiUrl}?search=${search}` : this.apiUrl;
+    return this.http.get<Movie[]>(url);
+  }
+
+
+
 
 getById(id: number): Observable<Movie> {
     return this.http.get<Movie>(`${this.apiUrl}/${id}`)

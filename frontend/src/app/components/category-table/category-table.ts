@@ -3,6 +3,7 @@ import { CategoryForm } from '../category-form/category-form';
 import { Modal } from '../modal/modal';
 import { Category } from '../../models/category.model';
 import { StateService } from '../../services/state.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-category-table',

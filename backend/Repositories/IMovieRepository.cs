@@ -4,7 +4,8 @@
   {
       public interface IMovieRepository
       {
-          Task<List<Movie>> GetAllAsync();   //List all movies   │ GET /api/movies
+          Task<List<Movie>> GetAllAsync(string? search = null);
+    
           Task<Movie?> GetByIdAsync(int id);   // Get single movie  │ GET /api/movies/1 
           Task<Movie> CreateAsync(Movie movie);   //Add new movie     │ POST /api/movies
           Task<Movie?> UpdateAsync(int id, Movie movie);  //Edit movie  │ PUT /api/movies/1 

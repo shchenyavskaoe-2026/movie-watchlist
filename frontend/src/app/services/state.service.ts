@@ -3,7 +3,7 @@
   import { CategoryService } from './category.service';
   import { Movie } from '../models/movie.model';
   import { Category } from '../models/category.model';
-import { Observable, tap } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, Observable, switchMap, tap } from 'rxjs';
 
   @Injectable({ providedIn: 'root' })
   export class StateService {
@@ -14,6 +14,18 @@ import { Observable, tap } from 'rxjs';
     movies = signal<Movie[]>([]);
     categories = signal<Category[]>([]);
 
+      // Search with BehaviorSubject
+  private searchSubject = new BehaviorSubject<string>('');
+
+constructor() {
+      this.searchSubject.pipe(
+      debounceTime(300),           // Wait 300ms after typing stops
+      distinctUntilChanged(),       // Only if value changed
+      switchMap(term => this.movieService.getAll(term))  // Call API
+    ).subscribe(movies => {
+      this.movies.set(movies);      // Update signal
+    });
+}
     
 
     // ============ MOVIES ============
@@ -24,6 +36,12 @@ import { Observable, tap } from 'rxjs';
       });
     }
 
+      // Method for search box to call
+  searchMovies(term: string): void {
+    this.searchSubject.next(term);
+  }
+
+  
     createMovie(movie: Partial<Movie>): Observable<Movie> {
       return this.movieService.create(movie).pipe(
         tap(() => this.loadMovies())  // Reload after create

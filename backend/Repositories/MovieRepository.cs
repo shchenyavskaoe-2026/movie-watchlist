@@ -14,11 +14,22 @@
               _context = context;
           }
 
-       public async Task<List<Movie>> GetAllAsync()
+
+
+    public async Task<List<Movie>> GetAllAsync(string? search = null)
   {
-      var movies = await _context.Movies
+      var query = _context.Movies
           .Include(m => m.Categories)
-          .ToListAsync();
+          .AsQueryable();
+
+      // Filter by search term if provided
+      if (!string.IsNullOrWhiteSpace(search))
+      {
+          search = search.ToLower();
+          query = query.Where(m => m.Title.ToLower().Contains(search));
+      }
+
+      var movies = await query.ToListAsync();
 
       // Populate CategoryIds from Categories
       foreach (var movie in movies)

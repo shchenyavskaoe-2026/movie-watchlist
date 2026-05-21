@@ -16,11 +16,11 @@
           }
 
 
-  // GET: api/movies
+    // GET /api/movies?search=term
   [HttpGet]
-  public async Task<ActionResult<List<Movie>>> GetAll()
+  public async Task<ActionResult<List<Movie>>> GetAll([FromQuery] string? search)
   {
-      var movies = await _repository.GetAllAsync();
+      var movies = await _repository.GetAllAsync(search);
       return Ok(movies);
   }
 
@@ -67,5 +67,11 @@
       }
       return NoContent();
   }
+
+
+
+
+
+
       }
   }
