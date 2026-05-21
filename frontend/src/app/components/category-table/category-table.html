@@ -5,13 +5,13 @@
           <th>ID</th>
           <th>Name</th>
         
-          <th>IMDB ID</th>
+          <th>Movie</th>
     
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        @for (category of categorys(); track category.id) {
+        @for (category of state.categories(); track category.id) {
           <tr>
             <td>{{ category.id }}</td>
             <td>{{ category.name }}</td>
@@ -19,14 +19,14 @@
             
           
        
-          
             <td>
-              @for (m of category.movie; track m.id) {
-                <span class="category-tag">{{ m.title }}</span>
-              } @empty {
-                -
-              }
-            </td>
+    @for (movieId of category.movieIds; track movieId) {
+      <span class="category-tag">{{ state.getMovieTitle(movieId) }}</span>
+    } @empty {
+      -
+    }
+  </td>
+       
           
             <td class="actions">
               <button class="edit-btn" (click)="openEditModal(category)">Edit</button>

@@ -7,6 +7,7 @@
   import { DatePipe } from '@angular/common';
 import { Category } from '../../models/category.model';
 import { CategoryService } from '../../services/category.service';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-movie-table',
@@ -15,40 +16,42 @@ import { CategoryService } from '../../services/category.service';
   styleUrl: './movie-table.scss',
 })
  export class MovieTable {
-    private movieService = inject(MovieService);
-    private categoryService = inject(CategoryService);
-
-    movies = signal<Movie[]>([]);
+  // In the class:
+  state = inject(StateService);
+    
     isModalOpen = signal(false);
     isDeleteModalOpen = signal(false);
     selectedMovie = signal<Movie | null>(null);
     modalTitle = signal('');
-  categories = signal<Category[]>([]);
+ 
 
 
 
 
     ngOnInit(): void {
-      this.loadMovies();
-         this.loadCategories();
+    
+    this.state.loadMovies();
+    this.state.loadCategories();
+
     }
 
-      loadCategories(): void {
-    this.categoryService.getAll().subscribe(data => {
-      this.categories.set(data);
-    });
-  }
 
-    getCategoryName(id: number): string {
-    return this.categories().find(c => c.id === id)?.name || '';
-  }
-
-    loadMovies(): void {
-      this.movieService.getAll().subscribe(data => {
-        console.log('mmmm:', data)
-        this.movies.set(data);
+  confirmDelete(): void {
+    const movie = this.selectedMovie();
+    if (movie) {
+      this.state.deleteMovie(movie.id).subscribe(() => {
+        this.closeDeleteModal();
       });
     }
+  }
+
+  onMovieSaved(): void {
+    // No need to reload - StateService does it automatically
+    this.closeModal();
+  }
+
+
+
 
     openAddModal(): void {
       this.selectedMovie.set(null);
@@ -77,19 +80,5 @@ import { CategoryService } from '../../services/category.service';
       this.selectedMovie.set(null);
     }
 
-    confirmDelete(): void {
-      const movie = this.selectedMovie();
-      if (movie) {
-        this.movieService.delete(movie.id).subscribe(() => {
-          this.loadMovies();
-          this.closeDeleteModal();
-        });
-      }
-    }
-
-    onMovieSaved(): void {
-      this.loadMovies();
-      this.closeModal();
-    }
   }
 

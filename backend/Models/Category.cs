@@ -1,5 +1,6 @@
 
     using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Backend.Models
@@ -11,8 +12,11 @@ namespace Backend.Models
               public required string Name { get; set; }
 
 
-  [JsonIgnore]  // Add this - stops the circular loop
-               public ICollection<Movie> Movies { get; set; } = new List<Movie>();
+    [JsonIgnore]
+          public ICollection<Movie> Movies { get; set; } = new List<Movie>();
+
+          [NotMapped]
+          public List<int>? MovieIds { get; set; }
 
     }
 

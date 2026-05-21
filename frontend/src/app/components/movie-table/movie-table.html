@@ -20,7 +20,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (movie of movies(); track movie.id) {
+        @for (movie of state.movies(); track movie.id) {
           <tr>
             <td>{{ movie.id }}</td>
             <td>{{ movie.title }}</td>
@@ -40,7 +40,7 @@
 
       <td>
     @for (catId of movie.categoryIds; track catId) {
-      <span class="category-tag">{{ getCategoryName(catId) }}</span>
+      <span class="category-tag">{{  state.getCategoryName(catId) }}</span>
     } @empty {
       -
     }

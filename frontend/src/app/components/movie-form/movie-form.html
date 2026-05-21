@@ -41,7 +41,7 @@
         <div class="form-group">
       <label>Categories</label>
       <div class="checkbox-group">
-        @for (category of categories(); track category.id) {
+        @for (category of state.categories(); track category.id) {
           <label class="checkbox-label">
             <input 
               type="checkbox" 

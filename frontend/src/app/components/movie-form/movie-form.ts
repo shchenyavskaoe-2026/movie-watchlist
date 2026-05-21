@@ -1,10 +1,7 @@
 import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
-import { FormBuilder, Validators } from '@angular/forms';
-import { MovieService } from '../../services/movie.service';
-import { CategoryService } from '../../services/category.service';
-import { Category } from '../../models/category.model';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Movie } from '../../models/movie.model';
+import { StateService } from '../../services/state.service';
 
 
 
@@ -18,9 +15,10 @@ import { Movie } from '../../models/movie.model';
 })
 export class MovieForm implements OnInit, OnChanges {
       private fb = inject(FormBuilder);  // Angular 14+ inject function
-      private movieService = inject(MovieService);
-      private categoryService = inject(CategoryService);
-      categories = signal<Category[]>([]);
+     // In the class:
+     state = inject(StateService);
+    
+    
       selectedCategoryIds = signal<number[]>([]);
   @Input() movie: Movie | null = null;
   @Output() saved = new EventEmitter<void>();
@@ -41,15 +39,12 @@ export class MovieForm implements OnInit, OnChanges {
 
 
     ngOnInit(): void {
-      this.loadCategories();
+       this.state.loadCategories();
 
     }
 
       ngOnChanges(): void {
-            console.log('Movie-form received:', this.movie);  // Add this
-
-
-
+ 
     if (this.movie) {
       // Edit mode - populate form
       this.movieForm.patchValue({
@@ -70,12 +65,7 @@ export class MovieForm implements OnInit, OnChanges {
   }
   
 
-    loadCategories(): void {
-      this.categoryService.getAll().subscribe(data => {
-        console.log('m-f :', data)
-        this.categories.set(data);
-      });
-    }
+  
     
 
 
@@ -105,12 +95,12 @@ export class MovieForm implements OnInit, OnChanges {
 
       if (this.movie) {
         // Edit mode
-        this.movieService.update(this.movie.id, movie).subscribe(() => {
+        this.state.updateMovie(this.movie.id, movie).subscribe(() => {
           this.saved.emit();  // Tell parent to reload
         });
       } else {
         // Add mode
-        this.movieService.create(movie).subscribe(() => {
+        this.state.createMovie(movie).subscribe(() => {
           this.saved.emit();  // Tell parent to reload
           this.movieForm.reset();
           this.selectedCategoryIds.set([]);

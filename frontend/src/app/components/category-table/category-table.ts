@@ -1,9 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { CategoryForm } from '../category-form/category-form';
 import { Modal } from '../modal/modal';
-import { DatePipe } from '@angular/common';
-import { CategoryService } from '../../services/category.service';
 import { Category } from '../../models/category.model';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-category-table',
@@ -12,23 +11,38 @@ import { Category } from '../../models/category.model';
   styleUrl: './category-table.scss',
 })
 export class CategoryTable {
-    private categoryService = inject(CategoryService);
 
-    categorys = signal<Category[]>([]);
+  // In the class:
+  state = inject(StateService);
+ 
     isModalOpen = signal(false);
     isDeleteModalOpen = signal(false);
     selectedCategory = signal<Category | null>(null);
     modalTitle = signal('');
 
+
     ngOnInit(): void {
-      this.loadCategory();
+
+          this.state.loadMovies();
+    this.state.loadCategories();
+
     }
 
-    loadCategory(): void {
-      this.categoryService.getAll().subscribe(data => {
-        this.categorys.set(data);
+ 
+  confirmDelete(): void {
+    const c = this.selectedCategory();
+    if (c) {
+      this.state.deleteCategory(c.id).subscribe(() => {
+        this.closeDeleteModal();
       });
     }
+  }
+
+  
+  onCategorySaved(): void {
+    // No need to reload - StateService does it automatically
+    this.closeModal();
+  }
 
     openAddModal(): void {
       this.selectedCategory.set(null);
@@ -57,18 +71,5 @@ export class CategoryTable {
       this.selectedCategory.set(null);
     }
 
-    confirmDelete(): void {
-      const c = this.selectedCategory();
-      if (c) {
-        this.categoryService.delete(c.id).subscribe(() => {
-          this.loadCategory();
-          this.closeDeleteModal();
-        });
-      }
-    }
 
-    onCategorySaved(): void {
-      this.loadCategory();
-      this.closeModal();
-    }
 }

@@ -16,17 +16,33 @@
 
           public async Task<List<Category>> GetAllAsync()
           {
-              return await _context.Categories
-                  .Include(m => m.Movies)  // Also load related movies
-                  .ToListAsync();
+       var categories = await _context.Categories
+          .Include(c => c.Movies)
+          .ToListAsync();
+
+      // Populate MovieIds from Movies
+      foreach (var category in categories)
+      {
+          category.MovieIds = category.Movies.Select(m => m.Id).ToList();
+      }
+
+      return categories;
           }
 
 
           public async Task<Category?> GetByIdAsync(int id)
           {
-              return await _context.Categories
-                  .Include(m => m.Movies)
-                  .FirstOrDefaultAsync(m => m.Id == id);
+       var category = await _context.Categories
+          .Include(c => c.Movies)
+          .FirstOrDefaultAsync(c => c.Id == id);
+
+      if (category != null)
+      {
+          category.MovieIds = category.Movies.Select(m => m.Id).ToList();
+      }
+
+      return category;
+
           }
 
           public async Task<Category> AddAsync(Category category)

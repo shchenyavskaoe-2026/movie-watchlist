@@ -1,9 +1,7 @@
 import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, signal, SimpleChanges } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { CategoryService } from '../../services/category.service';
-import { Movie } from '../../models/movie.model';
 import { Category } from '../../models/category.model';
-import { MovieService } from '../../services/movie.service';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-category-form',
@@ -14,16 +12,13 @@ import { MovieService } from '../../services/movie.service';
 export class CategoryForm implements OnInit, OnChanges{
 
 
-
+     // In the class:
+     state = inject(StateService);
 
 
 
   private fb = inject(FormBuilder);
-      private movieService = inject(MovieService);
-      private categoryService = inject(CategoryService);
 
-
-      movies = signal<Movie[]>([]);
       selectedMoviesIds = signal<number[]>([]);
   @Input() category: Category | null = null;
   @Output() saved = new EventEmitter<void>();
@@ -37,7 +32,7 @@ export class CategoryForm implements OnInit, OnChanges{
 
 
   ngOnInit(): void {
-         this.loadMovies();
+            this.state.loadMovies();
   }
     ngOnChanges(changes: SimpleChanges): void {
        if (this.category) {
@@ -54,11 +49,7 @@ export class CategoryForm implements OnInit, OnChanges{
     }
   }
 
-      loadMovies(): void {
-      this.movieService.getAll().subscribe(data => {
-        this.movies.set(data);
-      });
-    }
+
 
 
 
@@ -67,11 +58,10 @@ export class CategoryForm implements OnInit, OnChanges{
       const category = this.categoryForm.value;
        if (this.category) {
 // Edit mode
-        this.categoryService.update(this.category.id, category as { name: string }).subscribe(() => {
+        this.state.updateCategory(this.category.id, category as { name: string }).subscribe(() => {
           this.saved.emit();
          }) } else {
-    this.categoryService.create(category as { name: string }).subscribe(result => {
-        console.log('Category saved!', result);
+    this.state.createCategory(category as { name: string }).subscribe(result => {
         this.categoryForm.reset();
          this.saved.emit();
     }
