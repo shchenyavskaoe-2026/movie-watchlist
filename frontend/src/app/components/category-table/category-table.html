@@ -1,5 +1,15 @@
  <div class="table-container">
+ 
+    @if (store.loading()) {
+      <div class="loading">Loading...</div>
+    }
+
+    @if (store.error()) {
+      <div class="error">{{ store.error() }}</div>
+    }
+
     <table>
+
       <thead>
         <tr>
           <th>ID</th>
@@ -11,7 +21,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (category of state.categories(); track category.id) {
+        @for (category of store.categories(); track category.id) {
           <tr>
             <td>{{ category.id }}</td>
             <td>{{ category.name }}</td>
@@ -20,7 +30,7 @@
           
        
             <td>
-    @for (movieId of category.movieIds; track movieId) {
+  @for (movieId of category.movieIds; track movieId) {
       <span class="category-tag">{{ state.getMovieTitle(movieId) }}</span>
     } @empty {
       -

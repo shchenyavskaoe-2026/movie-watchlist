@@ -4,6 +4,7 @@ import { Modal } from '../modal/modal';
 import { Category } from '../../models/category.model';
 import { StateService } from '../../services/state.service';
 import { DatePipe } from '@angular/common';
+import { CategoryStore } from '../../stores/category.store';
 
 @Component({
   selector: 'app-category-table',
@@ -15,30 +16,33 @@ export class CategoryTable {
 
   // In the class:
   state = inject(StateService);
- 
-    isModalOpen = signal(false);
+
+     // Inject the store instead of StateService
+    readonly store = inject(CategoryStore);
+     isModalOpen = signal(false);
     isDeleteModalOpen = signal(false);
     selectedCategory = signal<Category | null>(null);
     modalTitle = signal('');
+ 
 
 
     ngOnInit(): void {
 
-          this.state.loadMovies();
-    this.state.loadCategories();
+         this.state.loadMovies();
+   // this.state.loadCategories();
 
     }
 
  
-  confirmDelete(): void {
-    const c = this.selectedCategory();
-    if (c) {
-      this.state.deleteCategory(c.id).subscribe(() => {
-        this.closeDeleteModal();
-      });
-    }
-  }
 
+
+      confirmDelete(): void {
+      const c = this.selectedCategory();
+      if (c) {
+        this.store.deleteCategory(c.id);
+        this.closeDeleteModal();
+      }
+    }
   
   onCategorySaved(): void {
     // No need to reload - StateService does it automatically
@@ -46,13 +50,15 @@ export class CategoryTable {
   }
 
     openAddModal(): void {
-      this.selectedCategory.set(null);
+
+         this.selectedCategory.set(null);
       this.modalTitle.set('Add Category');
       this.isModalOpen.set(true);
     }
 
     openEditModal(c: Category): void {
-      this.selectedCategory.set(c);
+
+         this.selectedCategory.set(c);
       this.modalTitle.set('Edit Category');
       this.isModalOpen.set(true);
     }

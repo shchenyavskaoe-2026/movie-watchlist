@@ -1,7 +1,7 @@
-import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, signal, SimpleChanges } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Category } from '../../models/category.model';
-import { StateService } from '../../services/state.service';
+  import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, signal, SimpleChanges } from '@angular/core';
+  import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+  import { Category } from '../../models/category.model';
+  import { CategoryStore } from '../../stores/category.store';
 
 @Component({
   selector: 'app-category-form',
@@ -13,9 +13,9 @@ export class CategoryForm implements OnInit, OnChanges{
 
 
      // In the class:
-     state = inject(StateService);
+    // state = inject(StateService);
 
-
+  readonly store = inject(CategoryStore);
 
   private fb = inject(FormBuilder);
 
@@ -32,7 +32,7 @@ export class CategoryForm implements OnInit, OnChanges{
 
 
   ngOnInit(): void {
-            this.state.loadMovies();
+        //    this.state.loadMovies();
   }
     ngOnChanges(changes: SimpleChanges): void {
        if (this.category) {
@@ -53,24 +53,25 @@ export class CategoryForm implements OnInit, OnChanges{
 
 
 
-  onSubmit(): void {
-    if (this.categoryForm.valid) {
-      const category = this.categoryForm.value;
-       if (this.category) {
-// Edit mode
-        this.state.updateCategory(this.category.id, category as { name: string }).subscribe(() => {
-          this.saved.emit();
-         }) } else {
-    this.state.createCategory(category as { name: string }).subscribe(result => {
-        this.categoryForm.reset();
-         this.saved.emit();
-    }
-    )}}}
+
 
       
       
   
-  
+      onSubmit(): void {
+      if (this.categoryForm.valid) {
+        const data = this.categoryForm.value as { name: string };
+
+        if (this.category) {
+          this.store.updateCategory(this.category.id, data);
+        } else {
+          this.store.createCategory(data);
+          this.categoryForm.reset();
+        }
+
+        this.saved.emit();
+      }
+    }
 
 
 
